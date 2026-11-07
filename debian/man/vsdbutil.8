@@ -1,0 +1,68 @@
+.\" SPDX-License-Identifier: BSD-2-Clause
+.\" Copyright (c) 2026 The Blueberry Pie OS Authors
+.Dd November 7, 2026
+.Dt VSDBUTIL 8
+.Os
+.Sh NAME
+.Nm vsdbutil
+.Nd set whether a volume uses file ownership
+.Sh SYNOPSIS
+.Nm
+.Op Fl a Ar path
+.Op Fl c Ar path
+.Op Fl d Ar path
+.Op Fl i
+.Op Fl x Ar path
+.Nm
+.Fl h
+.Sh DESCRIPTION
+.Nm
+records in a database, by volume UUID, whether each volume uses file ownership.
+The options are done in the order given.
+.Fl a ,
+.Fl d ,
+.Fl i
+and
+.Fl x
+also update the mount with
+.Xr mount 8 .
+.Bl -tag -width indent
+.It Fl a Ar path
+Use ownership on the volume that holds
+.Ar path .
+.It Fl c Ar path
+Show whether the volume that holds
+.Ar path
+uses ownership.
+.It Fl d Ar path
+Ignore ownership on the volume that holds
+.Ar path .
+The mounts of
+.Pa /
+and
+.Pa /System/Volumes/Data
+are left as they are.
+.It Fl i
+Use ownership on every mounted HFS or APFS volume.
+.It Fl x Ar path
+Remove the volume that holds
+.Ar path
+from the database.
+.It Fl h
+Show the usage.
+.El
+.Pp
+Only root may use
+.Fl a ,
+.Fl d ,
+.Fl i
+and
+.Fl x .
+.Sh FILES
+.Bl -tag -width indent -compact
+.It Pa /var/db/volinfo.database
+The database.
+.El
+.Sh SEE ALSO
+.Xr fstab 5 ,
+.Xr mount 8

@@ -1,0 +1,19 @@
+Source: diskdev-cmds
+Section: admin
+Priority: optional
+Maintainer: Maxwell <maxwell@blueberrypieos.com>
+Build-Depends: pietoolchain (>= 0.1.0)
+Standards-Version: 4.7.3
+Homepage: https://github.com/apple-oss-distributions/diskdev_cmds
+Vcs-Git: https://github.com/blueberrypieos/diskdev-cmds.git -b blueberry-pie-os/latest
+Vcs-Browser: https://github.com/blueberrypieos/diskdev-cmds
+Rules-Requires-Root: no
+
+Package: diskdev-cmds
+Architecture: darwin-arm64
+Essential: yes
+Priority: required
+Depends: libsystem, libutil
+Description: mount, fsck, fdisk and the quota tools
+ Disk and filesystem administration commands, filesystem identification
+ helpers, quota utilities, and their manual pages.

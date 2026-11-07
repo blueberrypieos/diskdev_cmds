@@ -1,0 +1,90 @@
+#!/usr/bin/make -f
+# SPDX-License-Identifier: BSD-2-Clause
+# Copyright (c) 2026 The Blueberry Pie OS Authors
+
+include /usr/share/pietoolchain/rules.mk
+
+TOOLS := mount umount fsck fdisk
+mount_SRCS := mount.tproj/mount.c mount_flags_dir/mount_flags.c disklib/vfslist.c disklib/fskit_none.c
+mount_DIR := sbin
+mount_FLAGS := -I$(SRCROOT)/disklib -I$(SRCROOT)/edt_fstab -I$(SRCROOT)/fsck.tproj \
+	-I$(SRCROOT)/mount_flags_dir
+umount_SRCS := umount.tproj/umount.c disklib/vfslist.c
+umount_DIR := sbin
+umount_FLAGS := -I$(SRCROOT)/disklib
+fsck_SRCS := fsck.tproj/fsck.c edt_fstab/edt_fstab.c
+fsck_DIR := sbin
+fdisk_SRCS := $(addprefix fdisk.tproj/,cmd.c disk.c fdisk.c getrawpartition.c mbr.c misc.c opendev.c \
+	part.c user.c auto.c)
+fdisk_DIR := usr/sbin
+
+TOOLS += quota quotacheck quotaon repquota edquota vsdbutil fstyp fstyp_msdos fstyp_ntfs \
+	fstyp_udf mount_devfs mount_fdesc dev_mkdb dirs_cleaner
+quota_SRCS := quota.tproj/quota.c
+quota_DIR := usr/bin
+quota_MODE := 4555
+quotacheck_SRCS := quotacheck.tproj/quotacheck.c quotacheck.tproj/hfs_quotacheck.c \
+	$(addprefix disklib/,dksecsize.c preen.c vfslist.c dkopen.c)
+quotacheck_DIR := sbin
+quotaon_SRCS := quotaon.tproj/quotaon.c
+quotaon_DIR := usr/sbin
+repquota_SRCS := repquota.tproj/repquota.c
+repquota_DIR := usr/sbin
+edquota_SRCS := edquota.tproj/edquota.c
+edquota_DIR := usr/sbin
+vsdbutil_SRCS := mount_flags_dir/mount_flags.c vsdbutil.tproj/vsdbutil_main.c
+vsdbutil_DIR := usr/sbin
+fstyp_SRCS := fstyp.tproj/fstyp.c
+fstyp_DIR := sbin
+fstyp_msdos_SRCS := fstyp.tproj/fstyp_msdos.c
+fstyp_msdos_DIR := sbin
+fstyp_ntfs_SRCS := fstyp.tproj/fstyp_ntfs.c
+fstyp_ntfs_DIR := sbin
+fstyp_udf_SRCS := fstyp.tproj/fstyp_udf.c
+fstyp_udf_DIR := sbin
+mount_devfs_SRCS := mount_devfs.tproj/mount_devfs.c
+mount_devfs_DIR := sbin
+mount_devfs_LIBS := -lutil
+mount_fdesc_SRCS := mount_fdesc.tproj/mount_fdesc.c
+mount_fdesc_DIR := sbin
+mount_fdesc_LIBS := -lutil
+dev_mkdb_SRCS := dev_mkdb.tproj/dev_mkdb.c
+dev_mkdb_DIR := usr/sbin
+dirs_cleaner_SRCS := dirs_cleaner/dirs_cleaner.c
+dirs_cleaner_DIR := usr/libexec
+LINKS += usr/sbin/quotaon:usr/sbin/quotaoff
+
+MANS := dev_mkdb.tproj/dev_mkdb.8:man8 \
+	dirs_cleaner/dirs_cleaner.8:man8 \
+	edquota.tproj/edquota.8:man8 \
+	fdisk.tproj/fdisk.8:man8 \
+	fsck.tproj/fsck.8:man8 \
+	fstyp.tproj/fstyp.8:man8 \
+	fstyp.tproj/fstyp_msdos.8:man8 \
+	fstyp.tproj/fstyp_ntfs.8:man8 \
+	fstyp.tproj/fstyp_udf.8:man8 \
+	mount.tproj/fstab.5:man5 \
+	mount.tproj/mount.8:man8 \
+	mount_fdesc.tproj/mount_fdesc.8:man8 \
+	quota.tproj/quota.1:man1 \
+	quotacheck.tproj/quotacheck.8:man8 \
+	quotaon.tproj/quotaon.8:man8 \
+	repquota.tproj/repquota.8:man8 \
+	umount.tproj/umount.8:man8 \
+	debian/man/vsdbutil.8:man8
+
+NOTICE := $(OBJ)/apsl-notice
+TOOLS_LDFLAGS += -Wl,-sectcreate,__TEXT,__source,$(NOTICE)
+include $(PIETOOLCHAIN)/tools.mk
+
+$(NOTICE):
+	@mkdir -p $(OBJ)
+	printf '%s\n' 'This program contains Covered Code under the Apple Public Source License 2.0.' \
+		'Its Source Code is available under that License from https://github.com/blueberrypieos/diskdev-cmds.' > $@
+$(TOOL_BINS): | $(NOTICE)
+
+all: $(TOOL_BINS)
+install: install-tools
+	ln -f $(ROOT)/usr/share/man/man8/quotaon.8 $(ROOT)/usr/share/man/man8/quotaoff.8
+
+.PHONY: all install
